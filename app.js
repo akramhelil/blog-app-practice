@@ -21,12 +21,12 @@ const blogSchema = new mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema);
 
-Blog.create({
-    title: 'Test Blog',
-    image: 'https://images.unsplash.com/photo-1568893472376-821efb43f1ce?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-    body: 'CREATED the BLOG',
+// Blog.create({
+//     title: 'Test Blog',
+//     image: 'https://images.unsplash.com/photo-1568893472376-821efb43f1ce?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+//     body: 'CREATED the BLOG',
 
-})
+// })
 
 // RESTFUL ROUTES
 app.get('/', (req, res) => {
