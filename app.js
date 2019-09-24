@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
     res.redirect('/blogs')
 })
 
+// Index Route
 app.get('/blogs', (req, res) => {
     Blog.find({}, (err, blogs) => {
         if (err) {
@@ -44,6 +45,23 @@ app.get('/blogs', (req, res) => {
 
 })
 
+// CREATE ROUTES
+app.get('/blogs/new', (req, res) => {
+    res.render('new')
+})
+
+app.post('/blogs', (req,res) => {
+    // create Blog
+    const data = req.body.blog
+    Blog.create(data, (err, newBlog) => {
+        if (err) {
+            res.rebder('new')
+        } else {
+            res.redirect('/blogs')
+        }
+    })
+    // redirect
+})
 
 
 
