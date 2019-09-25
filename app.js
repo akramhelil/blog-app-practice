@@ -95,7 +95,7 @@ app.put('/blogs/:id', (req, res) => {
     const updatedBlogId = req.params.id
     const updatedInfo = req.body.blog
 
-    Blog.findByIdAndUpdate(updatedBlogId, updatedInfo, (err, updatedBlog) => {
+    Blog.findOneAndUpdate(updatedBlogId, updatedInfo, (err, updatedBlog) => {
         if (err) {
             alert(err)  
             res.redirect('/blogs')
