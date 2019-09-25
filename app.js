@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3000
@@ -9,7 +10,7 @@ mongoose.connect("mongodb://localhost/blog-app", { useNewUrlParser: true, useUni
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(methodOverride('_method'));
 // MOngoose / Model Schema CONFIG
 const blogSchema = new mongoose.Schema({
     title: String,
@@ -75,6 +76,34 @@ app.get('/blogs/:id', (req, res) => {
     })
 })
 
+// Edit ROUTE
+app.get('/blogs/:id/edit', (req, res) => {
+    const blogId = req.params.id
+    Blog.findById(blogId, (err, editBlog) => {
+        if (err) {
+            aler(err)
+            res.redirent("/blogs")
+        } else {
+            res.render("edit",{ blog: editBlog} )
+        }
+    })
+
+})
+
+// UPDATE ROUTE
+app.put('/blogs/:id', (req, res) => {
+    const updatedBlogId = req.params.id
+    const updatedInfo = req.body.blog
+
+    Blog.findByIdAndUpdate(updatedBlogId, updatedInfo, (err, updatedBlog) => {
+        if (err) {
+            alert(err)  
+            res.redirect('/blogs')
+        } else {
+            res.redirect('/blogs/'+ updatedBlogId)
+        }
+    })
+});
 
 
 app.listen(PORT, () => {
