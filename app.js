@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const app = express();
+const expressSanitizer = require('express-sanitizer')
 const PORT = process.env.PORT || 3000
 
 // APP mongoose CONFIG
@@ -10,6 +11,7 @@ mongoose.connect("mongodb://localhost/blog-app", { useNewUrlParser: true, useUni
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressSanitizer());
 app.use(methodOverride('_method'));
 // MOngoose / Model Schema CONFIG
 const blogSchema = new mongoose.Schema({
@@ -22,12 +24,6 @@ const blogSchema = new mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema);
 
-// Blog.create({
-//     title: 'Test Blog',
-//     image: 'https://images.unsplash.com/photo-1568893472376-821efb43f1ce?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-//     body: 'CREATED the BLOG',
-
-// })
 
 // RESTFUL ROUTES
 app.get('/', (req, res) => {
@@ -46,15 +42,16 @@ app.get('/blogs', (req, res) => {
 
 })
 
-// CREATE ROUTES
+// New ROUTES
 app.get('/blogs/new', (req, res) => {
     res.render('new')
 })
 
-app.post('/blogs', (req,res) => {
-    // create Blog
-    const data = req.body.blog
-    Blog.create(data, (err, newBlog) => {
+// create Blog
+app.post('/blogs', (req, res) => {
+    req.body.blog.body = req.sanitize(req.body.blog.body)
+    
+    Blog.create(req.body.blog, (err, newBlog) => {
         if (err) {
             res.rebder('new')
         } else {
@@ -94,6 +91,7 @@ app.get('/blogs/:id/edit', (req, res) => {
 app.put('/blogs/:id', (req, res) => {
     const updatedBlogId = req.params.id
     const updatedInfo = req.body.blog
+    req.body.blog.body = req.sanitize(req.body.blog.body)
 
     Blog.findOneAndUpdate(updatedBlogId, updatedInfo, (err, updatedBlog) => {
         if (err) {
@@ -108,7 +106,7 @@ app.put('/blogs/:id', (req, res) => {
 // DELETE ROUTE
 app.delete("/blogs/:id", (req, res) => {
     const deleteId = req.params.id
-    Blog.findByIdAndDelete(deleteId, (err) => {
+    Blog.findOneAndDelete(deleteId, (err) => {
         if (err) {
             alert('Something went wrong try again')
         }else {
